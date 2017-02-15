@@ -1,7 +1,12 @@
 //
 //  LocalyticsPlugin.h
+//  Copyright (C) 2015 Char Software Inc., DBA Localytics
 //
-//  Copyright 2015 Localytics. All rights reserved.
+//  This code is provided under the Localytics Modified BSD License.
+//  A copy of this license has been distributed in a file called LICENSE
+//  with this source code.
+//
+// Please visit www.localytics.com for more information.
 //
 
 #import <Cordova/CDVPlugin.h>
@@ -21,6 +26,11 @@
 - (void)setOptedOut:(CDVInvokedUrlCommand *)command;
 - (void)isOptedOut:(CDVInvokedUrlCommand *)command;
 
+- (void)tagCustomerRegistered: (CDVInvokedUrlCommand *)command;
+- (void)tagCustomerLoggedIn: (CDVInvokedUrlCommand *)command;
+- (void)tagCustomerLoggedOut: (CDVInvokedUrlCommand *)command;
+- (void)tagContentViewed: (CDVInvokedUrlCommand *)command;
+
 - (void)setProfileAttribute:(CDVInvokedUrlCommand *)command;
 - (void)addProfileAttributesToSet:(CDVInvokedUrlCommand *)command;
 - (void)removeProfileAttributesFromSet:(CDVInvokedUrlCommand *)command;
@@ -36,14 +46,9 @@
 - (void)setCustomerEmail:(CDVInvokedUrlCommand *)command;
 - (void)setLocation:(CDVInvokedUrlCommand *)command;
 
-- (void)getIdentifier:(CDVInvokedUrlCommand *)command;
-- (void)getCustomerId:(CDVInvokedUrlCommand *)command;
-
 - (void)registerPush:(CDVInvokedUrlCommand *)command;
 - (void)setPushDisabled:(CDVInvokedUrlCommand *)command;
 - (void)isPushDisabled:(CDVInvokedUrlCommand *)command;
-- (void)setPushToken:(CDVInvokedUrlCommand *)command;
-- (void)getPushToken:(CDVInvokedUrlCommand *)command;
 - (void)setTestModeEnabled:(CDVInvokedUrlCommand *)command;
 - (void)isTestModeEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setInAppMessageDismissButtonImageWithName:(CDVInvokedUrlCommand *)command;
