@@ -9,11 +9,88 @@
 // Please visit www.localytics.com for more information.
 //
 
+#import "AppDelegate.h"
 #import "LocalyticsPlugin.h"
 #import <Localytics/Localytics.h>
+#import <objc/runtime.h>
 
 #define PROFILE_SCOPE_ORG @"org"
 #define PROFILE_SCOPE_APP @"app"
+
+static BOOL localyticsIsAutoIntegrate = NO;
+static BOOL localyticsDidReceiveRemoteNotificationSwizzled = NO;
+static BOOL localyticsRemoteNotificationSwizzled = NO;
+static BOOL localyticsRemoteNotificationErrorSwizzled = NO;
+static BOOL localyticsSourceApplicationOpenURLSwizzled = NO;
+
+BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
+{
+    // Code by example from http://nshipster.com/method-swizzling/
+    Method originalMethod = class_getInstanceMethod(clazz, originalSelector);
+    Method overrideMethod = class_getInstanceMethod(clazz, overrideSelector);
+    
+    if (class_addMethod(clazz, originalSelector, method_getImplementation(overrideMethod), method_getTypeEncoding(overrideMethod))) {
+        
+        class_replaceMethod(clazz, overrideSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+        return NO;
+    } else {
+        method_exchangeImplementations(originalMethod, overrideMethod);
+    }
+    return YES;
+}
+
+
+#pragma mark AppDelegate+LLPushNotification implementation
+@implementation AppDelegate (LLPushNotification)
+
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class clazz = [self class];
+        
+        localyticsDidReceiveRemoteNotificationSwizzled = MethodSwizzle(clazz, @selector(application:didReceiveRemoteNotification:fetchCompletionHandler:), @selector(localytics_swizzled_Application:didReceiveRemoteNotification:fetchCompletionHandler:));
+        localyticsRemoteNotificationSwizzled = MethodSwizzle(clazz, @selector(application:didRegisterForRemoteNotificationsWithDeviceToken:), @selector(localytics_swizzled_Application:didRegisterForRemoteNotificationsWithDeviceToken:));
+        localyticsRemoteNotificationErrorSwizzled = MethodSwizzle(clazz, @selector(application:didFailToRegisterForRemoteNotificationsWithError:), @selector(localytics_swizzled_Application:didFailToRegisterForRemoteNotificationsWithError:));
+        localyticsSourceApplicationOpenURLSwizzled = MethodSwizzle(clazz, @selector(application:openURL:sourceApplication:annotation:), @selector(localytics_swizzled_Application:openURL:sourceApplication:annotation:));
+    });
+}
+
+- (void) localytics_swizzled_Application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    [Localytics handleNotification:userInfo];
+    completionHandler(UIBackgroundFetchResultNoData);
+    
+    if (localyticsDidReceiveRemoteNotificationSwizzled) {
+        [self localytics_swizzled_Application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+    }
+}
+
+- (void) localytics_swizzled_Application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken;
+{
+    if (!localyticsIsAutoIntegrate) {
+        [Localytics setPushToken:deviceToken];
+    }
+    if (localyticsRemoteNotificationSwizzled) {
+        [self localytics_swizzled_Application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+    }
+}
+
+- (void) localytics_swizzled_Application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error;
+{
+    NSLog(@"onRemoteRegisterFail: %@", [error description]);
+    if (localyticsRemoteNotificationErrorSwizzled) {
+        [self localytics_swizzled_Application:application didFailToRegisterForRemoteNotificationsWithError:error];
+    }
+}
+
+- (BOOL) localytics_swizzled_Application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    [Localytics handleTestModeURL: url];
+    return localyticsSourceApplicationOpenURLSwizzled? [self localytics_swizzled_Application:application openURL:url sourceApplication:sourceApplication annotation:annotation] : YES;
+}
+
+@end
 
 @implementation LocalyticsPlugin
 
@@ -33,11 +110,15 @@ static NSDictionary* launchOptions;
 
 + (void)onDidFinishLaunchingNotification:(NSNotification *)notification {
     launchOptions = notification.userInfo;
+    if (launchOptions && launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+        [Localytics handleNotification: launchOptions];
+    }
+    
     [Localytics handleNotification: launchOptions];
 }
 
 + (void)onDidRegisterForRemoteNotificationWithDeviceToken:(NSNotification *)notification {
-    //NSLog(@"onRemoteRegister: %@", notification.object);
+    NSLog(@"onRemoteRegister: %@", notification.object);
     [Localytics setPushToken:notification.object];
 }
 
@@ -320,6 +401,22 @@ static NSDictionary* launchOptions;
     }
 }
 
+- (void)getIdentifier:(CDVInvokedUrlCommand *)command {
+    [self.commandDelegate runInBackground:^{
+        NSNumber *identifier = [command argumentAtIndex:0];
+        NSString *value = [Localytics valueForIdentifier:identifier];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)getCustomerId:(CDVInvokedUrlCommand *)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *value = [Localytics customerId];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
 
 #pragma mark Marketing
 
@@ -339,6 +436,32 @@ static NSDictionary* launchOptions;
 }
 - (void)isPushDisabled:(CDVInvokedUrlCommand *)command {
     // No-Op
+}
+
+- (void)setPushToken:(CDVInvokedUrlCommand *)command {
+    NSString *pushToken = [command argumentAtIndex:0];
+    if (pushToken) {
+        if (pushToken.length % 2) {
+            pushToken = [NSString stringWithFormat:@"0%@", pushToken];
+        }
+        NSMutableData *deviceToken = [NSMutableData data];
+        for (int i = 0; i < pushToken.length; i += 2) {
+            unsigned value;
+            NSScanner *scanner = [NSScanner scannerWithString:[pushToken substringWithRange:NSMakeRange(i, 2)]];
+            [scanner scanHexInt:&value];
+            uint8_t byte = value;
+            [deviceToken appendBytes:&byte length:1];
+        }
+        [Localytics setPushToken:deviceToken];
+    }
+}
+
+- (void)getPushToken:(CDVInvokedUrlCommand *)command {
+    [self.commandDelegate runInBackground:^{
+        NSString *value = [Localytics pushToken];
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:value];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 - (void)setTestModeEnabled:(CDVInvokedUrlCommand *)command {
