@@ -1,65 +1,7 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "https://github.com/jaymehtasa/localytics-cordova.git",
-        "scope": null,
-        "escapedName": null,
-        "name": null,
-        "rawSpec": "https://github.com/jaymehtasa/localytics-cordova.git",
-        "spec": "git+https://github.com/jaymehtasa/localytics-cordova.git",
-        "type": "hosted",
-        "hosted": {
-          "type": "github",
-          "ssh": "git@github.com:jaymehtasa/localytics-cordova.git",
-          "sshUrl": "git+ssh://git@github.com/jaymehtasa/localytics-cordova.git",
-          "httpsUrl": "git+https://github.com/jaymehtasa/localytics-cordova.git",
-          "gitUrl": "git://github.com/jaymehtasa/localytics-cordova.git",
-          "shortcut": "github:jaymehtasa/localytics-cordova",
-          "directUrl": "https://raw.githubusercontent.com/jaymehtasa/localytics-cordova/master/package.json"
-        }
-      },
-      "/Users/rajan.shah/Documents/SA Projects/IONIC/IONIC3/FaithPlay/Source Code/node_modules"
-    ]
-  ],
-  "_from": "git+https://github.com/jaymehtasa/localytics-cordova.git",
-  "_id": "localytics-cordova@3.8.5",
-  "_inCache": true,
-  "_location": "/localytics-cordova",
-  "_phantomChildren": {},
-  "_requested": {
-    "raw": "https://github.com/jaymehtasa/localytics-cordova.git",
-    "scope": null,
-    "escapedName": null,
-    "name": null,
-    "rawSpec": "https://github.com/jaymehtasa/localytics-cordova.git",
-    "spec": "git+https://github.com/jaymehtasa/localytics-cordova.git",
-    "type": "hosted",
-    "hosted": {
-      "type": "github",
-      "ssh": "git@github.com:jaymehtasa/localytics-cordova.git",
-      "sshUrl": "git+ssh://git@github.com/jaymehtasa/localytics-cordova.git",
-      "httpsUrl": "git+https://github.com/jaymehtasa/localytics-cordova.git",
-      "gitUrl": "git://github.com/jaymehtasa/localytics-cordova.git",
-      "shortcut": "github:jaymehtasa/localytics-cordova",
-      "directUrl": "https://raw.githubusercontent.com/jaymehtasa/localytics-cordova/master/package.json"
-    }
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "git+https://github.com/jaymehtasa/localytics-cordova.git#d53dc0a8c13337f24eab93fff924964110048217",
-  "_shasum": "fc2055ae19514059fe7c60eb66a9cd33b3b232cb",
-  "_shrinkwrap": null,
-  "_spec": "https://github.com/jaymehtasa/localytics-cordova.git",
-  "_where": "/Users/rajan.shah/Documents/SA Projects/IONIC/IONIC3/FaithPlay/Source Code/node_modules",
-  "author": {
-    "name": "Localytics"
-  },
-  "bugs": {
-    "url": "https://github.com/localytics/localytics-cordova/issues"
-  },
+  "name": "localytics-cordova",
+  "version": "3.8.5",
+  "description": "Localytics Plugin for Cordova/PhoneGap",
   "cordova": {
     "id": "com.localytics.phonegap.LocalyticsPlugin",
     "platforms": [
@@ -67,17 +9,10 @@
       "android"
     ]
   },
-  "dependencies": {},
-  "description": "Localytics Plugin for Cordova/PhoneGap",
-  "devDependencies": {},
-  "engines": [
-    {
-      "name": "cordova",
-      "version": ">=3.0.0"
-    }
-  ],
-  "gitHead": "d53dc0a8c13337f24eab93fff924964110048217",
-  "homepage": "https://Localytics.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/localytics/localytics-cordova.git"
+  },
   "keywords": [
     "localytics",
     "ecosystem:cordova",
@@ -86,14 +21,16 @@
     "analytics",
     "push messaging"
   ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Localytics",
   "license": "SEE LICENSE IN 'LICENSE' file",
-  "name": "localytics-cordova",
-  "optionalDependencies": {},
-  "readme": "Localytics for PhoneGap/Cordova\n========\n\n## Version\n\nThis version of the PhoneGap/Cordova SDK wraps v3.8.2 of the Localytics Android and v3.8.0 of the Localytics iOS SDKs\n\n## Supported Versions\n\nThe PhoneGap/Cordova SDK was tested on Cordova v6.1.1 and 6.2.0\n\n## Installation\n\n\tcordova plugin add localytics-cordova\n\n## Integration\n\nTo install Localytics for Phonegap, you'll need to take three basic steps.\n\n1. Set up your app key for each platform.\n\n2. Integrate your app with Localytics.\n\n3. Set up and register for Push notifications, if necessary.\n\n\n### 1. Set up app keys\n\nApp keys allow you to separate data. Create one set of app keys for each app, so you can focus on one app at a time in the Dashboard.\n\nYou’ll need an app key for each device platform, such as iOS, Android, Windows, or web. Separate test data from production data by using separate app keys.\n\nWhen you release your app to the app store, make sure your production app key is in it! You can feel free to delete your test app keys and make new ones whenever you want.\n\n#### iOS\nIn your \\<ApplicationName\\>-Info.plist, add the following under \\<dict\\> node:\n\n\t<key>LocalyticsAppKey</key>\n    <string>YOUR_APP_KEY</string>\n\n#### Android\n\nIn AndroidManifest.xml, add the following under \\<application\\> node:\n\n\t<meta-data android:name=\"LOCALYTICS_APP_KEY\" android:value=\"YOUR_APP_KEY\" />\n\n\n>*Note* Replace YOUR\\_APP\\_KEY with your Localytics app key.\n\n### 2. Automatic or manual integration?\n\nWith automatic integration, the plugin automatically opens, closes, and uploads sessions when the app goes into the background and foreground.\n\nWith manual integration, you have full control of open, close, and upload events, but you'll need to listen for pause and resume events and handle opens, closes, and uploading sessions manually.\n\nRegardless of the integration method you choose, start by adding the following listener:\n\n\tdocument.addEventListener('deviceready', this.onDeviceReady, false);        \n\n\n#### Automatic integration\n\nAdd the following for automatic integration.\n\n\tonDeviceReady: function() {\n\t\tLocalytics.autoIntegrate();\n\t\tLocalytics.openSession(); // For Android, we might have missed the call to open a session by the time autoIntegrate is called. Don't worry, calling this will not open a second session.\n\t}\n\n#### Manual Integration\n\nAdd the following for manual integration.\n\n\tonDeviceReady: function() {\n\t\tdocument.addEventListener(\"resume\", app.onResume, false);\n        document.addEventListener(\"pause\", app.onPause, false);\n        Localytics.integrate();\n        Localytics.openSession();                \n        Localytics.upload();\n\t}\n\tonResume: function () {\n        Localytics.openSession();\n        Localytics.upload();\n    },\n    onPause: function () {\n        Localytics.closeSession();\n        Localytics.upload();\n    },\n\n\nAdditionally, for each platform:\n\n#### iOS\n\nEnsure the following libraries are added to your project's .xcodeproj:\n\n    AdSupport.framework\n    libsqlite3.tbd\n    libz.tbd\n    SystemConfiguration.framework\n\nIf compiling against iOS 9 SDK, add an App Transport Security exception to Info.plist:\n\n    <key>NSAppTransportSecurity</key>\n        <dict>\n            <key>NSExceptionDomains</key>\n            <dict>\n                <key>public.localytics.s3.amazonaws.com</key>\n                <dict>\n                    <key>NSExceptionAllowsInsecureHTTPLoads</key>\n                    <true/>\n                </dict>\n                <key>pushapi.localytics.com</key>\n                <dict>\n                    <key>NSExceptionAllowsInsecureHTTPLoads</key>\n                    <true/>\n                </dict>\n            </dict>\n        </dict>\n\n#### Android\n\nEnsure the following ReferralReceiver is added to AndroidManifest.xml within the application tag:\n\n\t<receiver android:name=\"com.localytics.android.ReferralReceiver\"\n\tandroid:exported=\"true\">\n\t\t<intent-filter>\n\t\t\t<action android:name=\"com.android.vending.INSTALL_REFERRER\" />\n\t\t</intent-filter>\n\t</receiver>\n\n\n### 3. Set up and register for push notifications\n\niOS uses Apple Push Notification (APN) while Android uses Google Cloud Messaging (GCM). Follow the instructions for each respective push notification service to set up the necessary configurations and upload the certificate to the Localytics Dashboard before continuing with these instructions.\n\n>*Note*: In-App messaging is not supported on Android at this time. The native Android implementation to handle in-app messaging makes use of the FragmentActivity class that is incompatible with the primary CordovaActivity class that holds the Webview.\n\n#### iOS\n\n[Follow these instructions to set up push notifications for your app.]( http://docs.localytics.com/dev/ios.html#enable-background-modes-ios)\n\nAfterwards, simply call the following after the integration code in the previous step.\n\n\tLocalytics.registerPush();\n\n>*Note*: registerNotification relies on \"CDVRemoteNotification\", \"CDVRemoteNotificationError\" and \"CDVPluginHandleOpenURLNotification\" broadcasted by cordova's AppDelegate.m class. If you change the AppDelegate, ensure to rebroadcast these events from the appropriate handlers to ensure correct behavior. Alternatively, you can also integrate manually through native code instead.\n\n#### Android\n\n[Follow these instructions to set up push notifications for your app.](http://docs.localytics.com/dev/android.html#push-messaging-android)\n\nNext, copy the Google Play Services library and add it as a dependency to your project:\n\n1. Copy the folder \\<ANDROID_SDK_DIR\\>/extras/google/google\\_play\\_services\\_lib/ to \\<YOUR_PROJECT\\>/platforms/android/\n2. Add an extra line to \\<YOUR_PROJECT\\>/platforms/android/project.properties: \"android.library.reference.2=google-play-services_lib\n\nIn your AndroidManifest.xml, ensure the following are added _before_ your \\<application\\> tag:\n\n>*Note*: replace YOUR.PACKAGE.NAME with your package name, ie, com.yourcompany.yourapp\n\n\t<uses-permission android:name=\"android.permission.INTERNET\" />\n\t<uses-permission android:name=\"android.permission.WAKE_LOCK\" />   \n\t<uses-permission android:name=\"com.google.android.c2dm.permission.RECEIVE\" />\n\n\t<permission android:name=\"YOUR.PACKAGE.NAME.permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" />\n\t<uses-permission android:name=\"YOUR.PACKAGE.NAME.permission.C2D_MESSAGE\" />\n\nInside your \\<application\\> tag, add:\n\n>*Note*: replace YOUR.PACKAGE.NAME with your package name and \\<YOUR_PUSH_ID\\> with your GCM push id. **The \"\\\\ \" before the push id is intentional (ie. android:value=\"\\ 1234567\")**.\n\n\t<activity android:name=\"com.localytics.android.PushTrackingActivity\" />\n\t<receiver android:name=\"com.localytics.android.PushReceiver\" android:permission=\"com.google.android.c2dm.permission.SEND\">\n\t\t<intent-filter>\n\t\t\t<action android:name=\"com.google.android.c2dm.intent.REGISTRATION\" />\n\t\t\t<action android:name=\"com.google.android.c2dm.intent.RECEIVE\" />\n\t\t\t<category android:name=\"YOUR.PACKAGE.NAME\" />\n\t\t</intent-filter>\n\t</receiver>\n    <meta-data android:name=\"com.localytics.android_push_sender_id\" android:value=\"\\ <YOUR_PUSH_ID>\" />\n\n\nAfterwards, simply call the following function after the integration code in the previous step.\n\n\tLocalytics.registerPush();\n\n\n\nAfter integrating, tagging events and any further instrumentation should be done inside the web app.\n\n### Event tagging\n\nAnywhere in your application where an interesting event occurs, you can tag it by adding the following line of code, where “Options Saved” is a string describing the event:\n\n\tLocalytics.tagEvent(\"Options Saved\", null,  0);\n\nSometimes you might want to collect additional data about the event, like how many lives the player has, or what the last action the user took was before clicking on an ad. Use the second parameter of tagEvent to do this. It takes a hash of attributes and values.\n\n\tLocalytics.tagEvent(\"Options Saved\", { \"Display Units\" : \"MPH\", \"Age Range\" : \"18-25\" },  0);\n\nThe third parameter of tagEvent is used to increase customer lifetime value (CLV). If the user makes a purchase, you might specify the price of the purchase in cents.\n\n\tLocalytics.tagEvent(\"Purchase Completed\", { \"Item Name\" : \"Power Up\" }, 499);\n\n## SampleApp\nThe Cordova app found under SampleApp demonstrates a list of functional APIs that can be called via the JavaScript interface. Update \"LocalyticsAppKey\" and \"LOCALYTICS_APP_KEY\" for their respective platforms to easily test out the calls.\n",
-  "readmeFilename": "README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/localytics/localytics-cordova.git"
+  "bugs": {
+    "url": "https://github.com/localytics/localytics-cordova/issues"
   },
-  "version": "3.8.5"
+  "homepage": "https://Localytics.com"
 }
