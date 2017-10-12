@@ -1,283 +1,320 @@
-//
-//  Localytics.js
-//  Copyright (C) 2015 Char Software Inc., DBA Localytics
-//
-//  This code is provided under the Localytics Modified BSD License.
-//  A copy of this license has been distributed in a file called LICENSE
-//  with this source code.
-//
-// Please visit www.localytics.com for more information.
-//
+cordova.define("com.localytics.phonegap.LocalyticsPlugin.Localytics", function (require, exports, module) {
+	//
+	//  Localytics.js
+	//  Copyright (C) 2015 Char Software Inc., DBA Localytics
+	//
+	//  This code is provided under the Localytics Modified BSD License.
+	//  A copy of this license has been distributed in a file called LICENSE
+	//  with this source code.
+	//
+	// Please visit www.localytics.com for more information.
+	//
 
-var Localytics = function () {
-}
+	var Localytics = function () {
+	}
 
-/*******************
- * Integration
- ******************/
-// Initializes Localytics without opening a session
-// appKey = Localytics App ID as a string
-Localytics.prototype.integrate = function (localyticsKey) {
-	cordova.exec(null, null, "LocalyticsPlugin", "integrate", [localyticsKey]);
-}
+	/*******************
+	* Integration
+	******************/
+	// Initializes Localytics without opening a session
+	// appKey = Localytics App ID as a string
+	Localytics.prototype.integrate = function (localyticsKey) {
+		cordova.exec(null, null, "LocalyticsPlugin", "integrate", [localyticsKey]);
+	}
 
-// Initiates an upload
-// This should typically be called on deviceready, resume, and pause events
-Localytics.prototype.upload = function() {
-	cordova.exec(null, null, "LocalyticsPlugin", "upload", []);
-}
+	// Initiates an upload
+	// This should typically be called on deviceready, resume, and pause events
+	Localytics.prototype.upload = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "upload", []);
+	}
 
-// Initializes Localytics by hooking into the activity lifecycle events of the app
-Localytics.prototype.autoIntegrate = function() {
-	cordova.exec(null, null, "LocalyticsPlugin", "autoIntegrate", []);
-}
-
-
-/*******************
- * Analytics
- ******************/
-// Opens a session
-// This should typically be called on deviceready and resume events
-Localytics.prototype.openSession = function() {
-	cordova.exec(null, null, "LocalyticsPlugin", "openSession", []);
-}
-
-// Closes a session
-// This should typically be called on pause events
-Localytics.prototype.closeSession = function() {
-	cordova.exec(null, null, "LocalyticsPlugin", "closeSession", []);
-}
-
-// Tags an event
-// event = Name of the event
-// attributes = a hash of key/value pairs containing the event attributes
-// customerValueIncrease = customer value increase as an int
-Localytics.prototype.tagEvent = function (event, attributes, customerValueIncrease) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagEvent", [event, attributes, customerValueIncrease]);
-}
-
-// Tags a screen
-// Call this when a screen is displayed
-// screen = screen name as a string
-Localytics.prototype.tagScreen = function (screen) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagScreen", [screen]);
-}
-
-// Sets a custom dimension
-// index = dimension index as an int
-// value = dimension value as a string
-Localytics.prototype.setCustomDimension = function (index, value) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomDimension", [index, value]);
-}
-
-// Gets a custom dimension
-// index = dimension index as an int
-Localytics.prototype.getCustomDimension = function (index, successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "getCustomDimension", [index]);
-}
-
-// Sets opted out
-// enabled = boolean
-Localytics.prototype.setOptedOut = function (enabled) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setOptedOut", [enabled]);
-}
-
-// Gets opted out status
-// successCallback = callback function for result
-Localytics.prototype.isOptedOut = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "isOptedOut", []);
-}
-
-/*******************
- * Analytics - Standard events
- ******************/
-Localytics.prototype.tagCustomerRegistered = function (customer, method, attributes) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerRegistered", [customer, method, attributes]);
-}
-
-Localytics.prototype.tagCustomerLoggedIn = function (customer, method, attributes) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedIn", [customer, method, attributes]);
-}
-
-Localytics.prototype.tagCustomerLoggedOut = function (attributes) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedOut", [attributes]);
-}
-
-Localytics.prototype.tagContentViewed = function (contentName, contentId, contentType, attributes) {
-	cordova.exec(null, null, "LocalyticsPlugin", "tagContentViewed", [contentName, contentId, contentType, attributes]);
-}
-
-/*******************
- * Profiles
- ******************/
- Localytics.prototype.setProfileAttribute = function (name, value, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setProfileAttribute", [name, value, scope]);
-}
-
- Localytics.prototype.addProfileAttributesToSet = function (name, value, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "addProfileAttributesToSet", [name, value, scope]);
-}
-
- Localytics.prototype.removeProfileAttributesFromSet = function (name, value, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "removeProfileAttributesFromSet", [name, value, scope]);
-}
-
- Localytics.prototype.incrementProfileAttribute = function (name, value, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "incrementProfileAttribute", [name, value, scope]);
-}
-
- Localytics.prototype.decrementProfileAttribute = function (name, value, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "decrementProfileAttribute", [name, value, scope]);
-}
-
- Localytics.prototype.deleteProfileAttribute = function (name, scope) {
-	cordova.exec(null, null, "LocalyticsPlugin", "deleteProfileAttribute", [name, scope]);
-}
+	// Initializes Localytics by hooking into the activity lifecycle events of the app
+	Localytics.prototype.autoIntegrate = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "autoIntegrate", []);
+	}
 
 
-/*******************
- * User Information
- ******************/
-// Sets a custom idenitifer
-// key = identifier name as a string
-// value = identifier value as a string
-Localytics.prototype.setIdentifier = function (key, value) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setIdentifier", [key, value]);
-}
+	/*******************
+	* Analytics
+	******************/
+	// Opens a session
+	// This should typically be called on deviceready and resume events
+	Localytics.prototype.openSession = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "openSession", []);
+	}
 
-// Set customer ID
-// id = unique customer id as a string (ie, "12345")
-Localytics.prototype.setCustomerId = function (id) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomerId", [id]);
-}
+	// Closes a session
+	// This should typically be called on pause events
+	Localytics.prototype.closeSession = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "closeSession", []);
+	}
 
-// Set customer full name
-// fullName = customer full name as a string (ie, "John Doe")
-Localytics.prototype.setCustomerFullName = function (fullName) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomerFullName", [fullName]);
-}
+	// Tags an event
+	// event = Name of the event
+	// attributes = a hash of key/value pairs containing the event attributes
+	// customerValueIncrease = customer value increase as an int
+	Localytics.prototype.tagEvent = function (event, attributes, customerValueIncrease) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagEvent", [event, attributes, customerValueIncrease]);
+	}
 
-// Set customer first name
-// firstName = customer first name as a string (ie, "John")
-Localytics.prototype.setCustomerFirstName = function (firstName) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomerFirstName", [firstName]);
-}
+	// Tags a screen
+	// Call this when a screen is displayed
+	// screen = screen name as a string
+	Localytics.prototype.tagScreen = function (screen) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagScreen", [screen]);
+	}
 
-// Set customer last name
-// lastName = customer last name as a string (ie, "Doe")
-Localytics.prototype.setCustomerLastName = function (lastName) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomerLastName", [lastName]);
-}
+	// Sets a custom dimension
+	// index = dimension index as an int
+	// value = dimension value as a string
+	Localytics.prototype.setCustomDimension = function (index, value) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomDimension", [index, value]);
+	}
 
-// Set customer email address
-// email = customer email as a string (ie, "johndoe@company.com")
-Localytics.prototype.setCustomerEmail = function (email) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setCustomerEmail", [email]);
-}
+	// Gets a custom dimension
+	// index = dimension index as an int
+	Localytics.prototype.getCustomDimension = function (index, successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getCustomDimension", [index]);
+	}
 
-Localytics.prototype.setLocation = function (latitude, longitude) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setLocation", [latitude, longitude]);
-}
+	// Sets opted out
+	// enabled = boolean
+	Localytics.prototype.setOptedOut = function (enabled) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setOptedOut", [enabled]);
+	}
 
-/*******************
- * Marketing
- ******************/
-// Registers for push notifications
-// successCallback = callback function for result
-Localytics.prototype.registerPush = function () {
-	cordova.exec(null, null, "LocalyticsPlugin", "registerPush", []);
-}
+	// Gets opted out status
+	// successCallback = callback function for result
+	Localytics.prototype.isOptedOut = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "isOptedOut", []);
+	}
 
-// Toggles push disabled
-// enabled = boolean
-Localytics.prototype.setPushDisabled = function (enabled) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setPushDisabled", [enabled]);
-}
+	/*******************
+	* Analytics - Standard events
+	******************/
+	Localytics.prototype.tagCustomerRegistered = function (customer, method, attributes) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerRegistered", [customer, method, attributes]);
+	}
 
-// Gets push status
-// successCallback = callback function for result
-Localytics.prototype.isPushDisabled = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "isPushDisabled", []);
-}
+	Localytics.prototype.tagCustomerLoggedIn = function (customer, method, attributes) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedIn", [customer, method, attributes]);
+	}
 
-// Enables or disables Localytics test mode (disabled by default)
-// enabled = boolean
-Localytics.prototype.setTestModeEnabled = function (enabled) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setTestModeEnabled", [enabled]);
-}
+	Localytics.prototype.tagCustomerLoggedOut = function (attributes) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagCustomerLoggedOut", [attributes]);
+	}
 
-// Gets test mode status
-// successCallback = callback function for result
-Localytics.prototype.isTestModeEnabled = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "isTestModeEnabled", []);
-}
+	Localytics.prototype.tagContentViewed = function (contentName, contentId, contentType, attributes) {
+		cordova.exec(null, null, "LocalyticsPlugin", "tagContentViewed", [contentName, contentId, contentType, attributes]);
+	}
 
-Localytics.prototype.setInAppMessageDismissButtonImageWithName = function (imageName) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setInAppMessageDismissButtonImageWithName", [imageName]);
-}
+	/*******************
+	* Profiles
+	******************/
+	Localytics.prototype.setProfileAttribute = function (name, value, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setProfileAttribute", [name, value, scope]);
+	}
 
-Localytics.prototype.setInAppMessageDismissButtonLocation = function (buttonLocation) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setInAppMessageDismissButtonLocation", [buttonLocation]);
-}
+	Localytics.prototype.addProfileAttributesToSet = function (name, value, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "addProfileAttributesToSet", [name, value, scope]);
+	}
 
-Localytics.prototype.getInAppMessageDismissButtonLocation = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "getInAppMessageDismissButtonLocation", []);
-}
+	Localytics.prototype.removeProfileAttributesFromSet = function (name, value, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "removeProfileAttributesFromSet", [name, value, scope]);
+	}
 
-Localytics.prototype.triggerInAppMessage = function (triggerName, attributes) {
-	cordova.exec(null, null, "LocalyticsPlugin", "triggerInAppMessage", [triggerName, attributes]);
-}
+	Localytics.prototype.incrementProfileAttribute = function (name, value, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "incrementProfileAttribute", [name, value, scope]);
+	}
 
-Localytics.prototype.dismissCurrentInAppMessage = function () {
-	cordova.exec(null, null, "LocalyticsPlugin", "dismissCurrentInAppMessage", []);
-}
+	Localytics.prototype.decrementProfileAttribute = function (name, value, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "decrementProfileAttribute", [name, value, scope]);
+	}
 
-
-
-/*******************
- * Developer Options
- ******************/
-// Enables or disables Localytics logging (disabled by default)
-// enabled = boolean
-Localytics.prototype.setLoggingEnabled = function (enabled) {
-	cordova.exec(null, null, "LocalyticsPlugin", "setLoggingEnabled", [enabled]);
-}
-
-// Gets logging status
-// successCallback = callback function for result
-Localytics.prototype.isLoggingEnabled = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "isLoggingEnabled", []);
-}
-
-// Sets session timeout interval
-// seconds = timeout interval in seconds
-Localytics.prototype.setSessionTimeoutInterval = function (seconds) {
-    cordova.exec(null, null, "LocalyticsPlugin", "setSessionTimeoutInterval", [seconds]);
-}
-
-// Gets session timeout interval
-// successCallback = callback function for result
-Localytics.prototype.getSessionTimeoutInterval = function (successCallback) {
-    cordova.exec(successCallback, null, "LocalyticsPlugin", "getSessionTimeoutInterval", []);
-}
-
-// Gets install id
-// successCallback = callback function for result
-Localytics.prototype.getInstallId = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "getInstallId", []);
-}
-
-// Gets app key
-// successCallback = callback function for result
-Localytics.prototype.getAppKey = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "getAppKey", []);
-}
-
-// Gets library version
-// successCallback = callback function for result
-Localytics.prototype.getLibraryVersion = function (successCallback) {
-	cordova.exec(successCallback, null, "LocalyticsPlugin", "getLibraryVersion", []);
-}
+	Localytics.prototype.deleteProfileAttribute = function (name, scope) {
+		cordova.exec(null, null, "LocalyticsPlugin", "deleteProfileAttribute", [name, scope]);
+	}
 
 
-module.exports = new Localytics();
+	/*******************
+	* User Information
+	******************/
+	// Sets a custom idenitifer
+	// key = identifier name as a string
+	// value = identifier value as a string
+	Localytics.prototype.setIdentifier = function (key, value) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setIdentifier", [key, value]);
+	}
+
+	// Set customer ID
+	// id = unique customer id as a string (ie, "12345")
+	Localytics.prototype.setCustomerId = function (id) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomerId", [id]);
+	}
+
+	// Set customer full name
+	// fullName = customer full name as a string (ie, "John Doe")
+	Localytics.prototype.setCustomerFullName = function (fullName) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomerFullName", [fullName]);
+	}
+
+	// Set customer first name
+	// firstName = customer first name as a string (ie, "John")
+	Localytics.prototype.setCustomerFirstName = function (firstName) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomerFirstName", [firstName]);
+	}
+
+	// Set customer last name
+	// lastName = customer last name as a string (ie, "Doe")
+	Localytics.prototype.setCustomerLastName = function (lastName) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomerLastName", [lastName]);
+	}
+
+	// Set customer email address
+	// email = customer email as a string (ie, "johndoe@company.com")
+	Localytics.prototype.setCustomerEmail = function (email) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setCustomerEmail", [email]);
+	}
+
+	Localytics.prototype.setLocation = function (latitude, longitude) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setLocation", [latitude, longitude]);
+	}
+
+	/*******************
+	* Marketing
+	******************/
+	// Registers for push notifications
+	// successCallback = callback function for result
+	Localytics.prototype.registerPush = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "registerPush", []);
+	}
+
+	// Toggles push disabled
+	// enabled = boolean
+	Localytics.prototype.setPushDisabled = function (enabled) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setPushDisabled", [enabled]);
+	}
+
+	// Gets push status
+	// successCallback = callback function for result
+	Localytics.prototype.isPushDisabled = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "isPushDisabled", []);
+	}
+
+	// Enables or disables Localytics test mode (disabled by default)
+	// enabled = boolean
+	Localytics.prototype.setTestModeEnabled = function (enabled) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setTestModeEnabled", [enabled]);
+	}
+
+	// Gets test mode status
+	// successCallback = callback function for result
+	Localytics.prototype.isTestModeEnabled = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "isTestModeEnabled", []);
+	}
+
+	Localytics.prototype.setInAppMessageDismissButtonImageWithName = function (imageName) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setInAppMessageDismissButtonImageWithName", [imageName]);
+	}
+
+	Localytics.prototype.setInAppMessageDismissButtonLocation = function (buttonLocation) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setInAppMessageDismissButtonLocation", [buttonLocation]);
+	}
+
+	Localytics.prototype.getInAppMessageDismissButtonLocation = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getInAppMessageDismissButtonLocation", []);
+	}
+
+	Localytics.prototype.triggerInAppMessage = function (triggerName, attributes) {
+		cordova.exec(null, null, "LocalyticsPlugin", "triggerInAppMessage", [triggerName, attributes]);
+	}
+
+	Localytics.prototype.dismissCurrentInAppMessage = function () {
+		cordova.exec(null, null, "LocalyticsPlugin", "dismissCurrentInAppMessage", []);
+	}
+
+
+
+	/*******************
+	* Developer Options
+	******************/
+	// Enables or disables Localytics logging (disabled by default)
+	// enabled = boolean
+	Localytics.prototype.setLoggingEnabled = function (enabled) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setLoggingEnabled", [enabled]);
+	}
+
+	// Gets logging status
+	// successCallback = callback function for result
+	Localytics.prototype.isLoggingEnabled = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "isLoggingEnabled", []);
+	}
+
+	// Sets session timeout interval
+	// seconds = timeout interval in seconds
+	Localytics.prototype.setSessionTimeoutInterval = function (seconds) {
+		cordova.exec(null, null, "LocalyticsPlugin", "setSessionTimeoutInterval", [seconds]);
+	}
+
+	// Gets session timeout interval
+	// successCallback = callback function for result
+	Localytics.prototype.getSessionTimeoutInterval = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getSessionTimeoutInterval", []);
+	}
+
+	// Gets install id
+	// successCallback = callback function for result
+	Localytics.prototype.getInstallId = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getInstallId", []);
+	}
+
+	// Gets app key
+	// successCallback = callback function for result
+	Localytics.prototype.getAppKey = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getAppKey", []);
+	}
+
+	// Gets library version
+	// successCallback = callback function for result
+	Localytics.prototype.getLibraryVersion = function (successCallback) {
+		cordova.exec(successCallback, null, "LocalyticsPlugin", "getLibraryVersion", []);
+	}
+
+	Localytics.prototype.notoficationReceived = function (ministryId) {
+		//  alert(ministryId);
+		console.log(ministryId);
+		var event = new CustomEvent("notification", { "detail": ministryId });
+		// Dispatch/Trigger/Fire the event
+		document.dispatchEvent(event);
+
+	};
+
+	Localytics.prototype.notoficationActionReceived = function (ministryId, feedId, ministryName, type, campingId, body, title) {
+		//  alert(ministryId);
+		var ministryData = {
+			"ministryName": ministryName,
+			"type": type
+		}
+		if (feedId != undefined) {
+			ministryData["feedId"] = feedId
+		}
+		if (ministryId != undefined) {
+			ministryData["ministryId"] = ministryId
+		}
+		if (campingId != undefined) {
+			ministryData["campingId"] = campingId
+		}
+		if (body != undefined) {
+			ministryData["body"] = body
+		}
+		if (title != undefined) {
+			ministryData["title"] = title
+		}
+		console.log(ministryData)
+		var event = new CustomEvent("notificationAction", { "detail": ministryData });
+		// Dispatch/Trigger/Fire the event
+		document.dispatchEvent(event);
+
+	};
+	module.exports = new Localytics();
+});

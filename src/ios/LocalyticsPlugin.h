@@ -10,8 +10,15 @@
 //
 
 #import <Cordova/CDVPlugin.h>
+@import UserNotifications;
 
-@interface LocalyticsPlugin : CDVPlugin
+// define macro
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
+@interface LocalyticsPlugin : CDVPlugin<UNUserNotificationCenterDelegate>
+
+
 
 - (void)integrate:(CDVInvokedUrlCommand *)command;
 - (void)autoIntegrate:(CDVInvokedUrlCommand *)command;
