@@ -98,6 +98,9 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     if (localyticsDidReceiveRemoteNotificationSwizzled) {
         [self localytics_swizzled_Application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
     }
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive) {
+        [[Branch getInstance] handlePushNotification:userInfo];
+    }
 }
 
 - (void) localytics_swizzled_Application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken;
@@ -133,10 +136,13 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     UNNotificationAction *more = [UNNotificationAction actionWithIdentifier:@"more" title:@"More like this" options:UNNotificationActionOptionForeground];
     UNNotificationAction *less = [UNNotificationAction actionWithIdentifier:@"less" title:@"Less like this" options:UNNotificationActionOptionForeground];
     UNNotificationCategory *notificationAction = [UNNotificationCategory categoryWithIdentifier:@"notificationAction" actions:@[more, less] intentIdentifiers:@[] options:UNNotificationCategoryOptionNone];
-    
-    NSSet *categories = [NSSet setWithArray:@[podcastAction,subscribedPodcast, notificationAction]];
+    UNNotificationAction *listening = [UNNotificationAction actionWithIdentifier:@"listening" title:@"Yes,Keep Listening" options:UNNotificationActionOptionForeground];
+    UNNotificationAction *nextPlay = [UNNotificationAction actionWithIdentifier:@"nextPlay" title:@"Play next" options:UNNotificationActionOptionForeground];
+    UNNotificationCategory *localNotificationAction = [UNNotificationCategory categoryWithIdentifier:@"localNotificationAction" actions:@[listening, nextPlay] intentIdentifiers:@[] options:UNNotificationCategoryOptionNone];
+    NSSet *categories = [NSSet setWithArray:@[podcastAction,subscribedPodcast, notificationAction,localNotificationAction]];
     [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(callSubscribe:) name:@"callSubscribe" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(localNotificationHandler:) name:@"localNotificationHandler" object:nil];
 }
 
 -(void)callSubscribe:(NSNotification *)notification{
@@ -150,6 +156,15 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     WKWebView *webView = (WKWebView *)self.viewController.webView;
     [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationActionReceived(\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\")", ministryId,feedId,ministryName,type,campingId,title,body] completionHandler:nil];
 }
+
+-(void)localNotificationHandler:(NSNotification *)notification{
+    NSString *type = notification.userInfo[@"type"];
+    NSString *clipId = notification.userInfo[@"clipId"];
+    NSString *feedId = notification.userInfo[@"feedId"];
+    WKWebView *webView = (WKWebView *)self.viewController.webView;
+    [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.localNotoficationActionReceived(\"%@\",\"%@\",\"%@\")", clipId,feedId,type] completionHandler:nil];
+}
+
 
 @end
 
@@ -539,7 +554,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         }
         [notificationData setValue:ministryName forKey:@"ministryName"];
         [notificationData setValue:@"subscribe" forKey:@"type"];
-         [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
     } else if ([@"listen" isEqualToString:response.actionIdentifier]) {
         NSString *ministryId = response.notification.request.content.userInfo[@"ministryId"];
         NSString *feedId = response.notification.request.content.userInfo[@"feedId"];
@@ -572,6 +587,20 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         NSString *campingId = localyticsData[@"ca"];
         NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:campingId,@"campingId",title,@"title",body,@"body",@"less",@"type", nil];
         [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+    }else if ([@"listening" isEqualToString:response.actionIdentifier]){
+        NSString *dataStr = response.notification.request.content.userInfo[@"data"];
+        NSData *dataObj = [dataStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *data = [NSJSONSerialization JSONObjectWithData:dataObj options:0 error:nil];
+        NSLog(@"%@",data);
+        NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:data[@"clipId"],@"clipId",data[@"feedId"],@"feedId",@"Keep Listening",@"type", nil];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
+    }else if ([@"nextPlay" isEqualToString:response.actionIdentifier]){
+        NSString *dataStr = response.notification.request.content.userInfo[@"data"];
+        NSData *dataObj = [dataStr dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *data = [NSJSONSerialization JSONObjectWithData:dataObj options:0 error:nil];
+        NSLog(@"%@",data);
+        NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:data[@"clipId"],@"clipId",data[@"feedId"],@"feedId",@"Play next",@"type", nil];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
     }else{
         NSLog( @"Handle push from background or closed" );
         // if you set a member variable in didReceiveRemoteNotification, you  will know if this is from closed or background
