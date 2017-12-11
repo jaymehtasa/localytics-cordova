@@ -316,5 +316,18 @@ cordova.define("com.localytics.phonegap.LocalyticsPlugin.Localytics", function (
 		document.dispatchEvent(event);
 
 	};
+
+	Localytics.prototype.localNotoficationActionReceived = function (clipId, feedId,  type) {
+		//  alert(ministryId);
+		var clipData = {
+		"clipId": clipId,
+		"feedId":feedId,
+		"type": type
+		}
+	  var event = new CustomEvent("localNotificationAction", { "detail": clipData });
+		// Dispatch/Trigger/Fire the event
+		document.dispatchEvent(event);
+		
+		};
 	module.exports = new Localytics();
 });
