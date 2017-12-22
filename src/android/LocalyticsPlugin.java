@@ -50,8 +50,12 @@ public class LocalyticsPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("integrate")) {
-            String localyticsKey = (args.length() == 1 && !args.isNull(0)? args.getString(0) : null);
+              String localyticsKey = (args.length() == 1 && !args.isNull(0)? args.getString(0) : null);
             Localytics.integrate(cordova.getActivity().getApplicationContext(), localyticsKey);
+            Intent receivedIntent = ((MainActivity)cordova.getActivity()).getReceivedIntent();
+            if(receivedIntent != null){
+                Localytics.handlePushNotificationOpened(receivedIntent);
+            }
             callbackContext.success();
             return true;
         } else if (action.equals("upload")) {
