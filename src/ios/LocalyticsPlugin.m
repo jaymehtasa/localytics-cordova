@@ -94,7 +94,15 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     NSLog(@"FIRED NOTIFICATIONS");
     NSString *ministryId = userInfo[@"ministryId"];
     WKWebView *webView = (WKWebView *)self.viewController.webView;
-    [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:nil];
+    [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:^(id result, NSError *error) {
+        if (error == nil) {
+            if (result != nil) {
+                resultString = [NSString stringWithFormat:@"%@", result];
+            }
+        } else {
+            NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
+        }
+    }];
     completionHandler(UIBackgroundFetchResultNoData);
     
     if (localyticsDidReceiveRemoteNotificationSwizzled) {
@@ -548,6 +556,17 @@ static NSDictionary* launchOptions;
     
 }
 
+/**
+ * Set the badge number.
+ */
+- (void) setBadgeCount:(CDVInvokedUrlCommand *)command {
+    NSArray* args = [command arguments];
+    int number    = [[args objectAtIndex:0] intValue];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ [UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
+    });
+}
+
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
@@ -775,5 +794,4 @@ static NSDictionary* launchOptions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
-
 @end

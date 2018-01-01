@@ -188,6 +188,15 @@ Localytics.prototype.registerPush = function () {
     cordova.exec(null, null, "LocalyticsPlugin", "registerPush", []);
 }
 
+Localytics.prototype.setBadgeCount = function (count) {
+    if (cordova.platformId === 'ios') {
+        cordova.exec(null, null, "LocalyticsPlugin", "setBadgeCount", [count]);
+    }
+    else {
+        console.log('setBadgeCount not available in Android currently')
+    }
+}
+
 // Toggles push disabled
 // enabled = boolean
 Localytics.prototype.setPushDisabled = function (enabled) {
@@ -313,16 +322,16 @@ Localytics.prototype.notoficationActionReceived = function (ministryId, feedId, 
     document.dispatchEvent(event);
 
 };
-Localytics.prototype.localNotoficationActionReceived = function (clipId, feedId,  type) {
-	//  alert(ministryId);
-	var clipData = {
-	"clipId": clipId,
-	"feedId":feedId,
-	"type": type
-	}
-	var event = new CustomEvent("localNotificationAction", { "detail": clipData });
-	// Dispatch/Trigger/Fire the event
-	document.dispatchEvent(event);
+Localytics.prototype.localNotoficationActionReceived = function (clipId, feedId, type) {
+    //  alert(ministryId);
+    var clipData = {
+        "clipId": clipId,
+        "feedId": feedId,
+        "type": type
+    }
+    var event = new CustomEvent("localNotificationAction", { "detail": clipData });
+    // Dispatch/Trigger/Fire the event
+    document.dispatchEvent(event);
 };
 
 module.exports = new Localytics();
