@@ -127,6 +127,18 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     return [Localytics handleTestModeURL: url];
 }
 
+
+/**
+ * Set the badge number.
+ */
+- (void) setBadgeCount:(CDVInvokedUrlCommand *)command {
+    NSArray* args = [command arguments];
+    int number    = [[args objectAtIndex:0] intValue];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [ [UIApplication sharedApplication] setApplicationIconBadgeNumber:number];
+    });
+}
+
 -(void)setCategoryButton{
     UNNotificationAction *subscribe = [UNNotificationAction actionWithIdentifier:@"subscribe" title:@"Subscribe" options:UNNotificationActionOptionForeground];
     UNNotificationAction *listen = [UNNotificationAction actionWithIdentifier:@"listen" title:@"Listen Now" options:UNNotificationActionOptionForeground];
@@ -752,5 +764,4 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
-
 @end

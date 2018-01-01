@@ -71,5 +71,5 @@
 - (void)getInstallId:(CDVInvokedUrlCommand *)command;
 - (void)getAppKey:(CDVInvokedUrlCommand *)command;
 - (void)getLibraryVersion:(CDVInvokedUrlCommand *)command;
-
+- (void) setBadgeCount:(CDVInvokedUrlCommand *)command;
 @end
