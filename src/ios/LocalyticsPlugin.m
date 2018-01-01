@@ -97,7 +97,7 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:^(id result, NSError *error) {
         if (error == nil) {
             if (result != nil) {
-                resultString = [NSString stringWithFormat:@"%@", result];
+            NSLog(@"%@", result);
             }
         } else {
             NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
