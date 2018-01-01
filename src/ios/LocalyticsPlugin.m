@@ -9,6 +9,7 @@
 // Please visit www.localytics.com for more information.
 //
 
+#import <UserNotifications/UNUserNotificationCenter.h>
 #import "AppDelegate.h"
 #import "LocalyticsPlugin.h"
 #import <Localytics/Localytics.h>
@@ -24,7 +25,6 @@ static BOOL localyticsDidReceiveRemoteNotificationSwizzled = NO;
 static BOOL localyticsRemoteNotificationSwizzled = NO;
 static BOOL localyticsRemoteNotificationErrorSwizzled = NO;
 static BOOL localyticsSourceApplicationOpenURLSwizzled = NO;
-static BOOL localyticsDidReceiveRemoteNotificationSwizzled2 = NO;
 static BOOL localyticsSourceApplicationOpenURLSwizzled3 = NO;
 
 BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
@@ -63,6 +63,9 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     });
 }
 
+
+
+
 - (void)localytics_swizzled_Application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
     NSLog(@"%@", notificationSettings);
     [Localytics didRegisterUserNotificationSettings:notificationSettings];
@@ -87,19 +90,15 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
 
 - (void) localytics_swizzled_Application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    //    [Localytics handleNotification:userInfo];
     [self registerForBackground];
     NSLog(@"FIRED NOTIFICATIONS");
     NSString *ministryId = userInfo[@"ministryId"];
     WKWebView *webView = (WKWebView *)self.viewController.webView;
     [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:nil];
     completionHandler(UIBackgroundFetchResultNoData);
-    NSLog(@"User Info:%@*",userInfo);
+    
     if (localyticsDidReceiveRemoteNotificationSwizzled) {
         [self localytics_swizzled_Application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-    }
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive) {
-        [[Branch getInstance] handlePushNotification:userInfo];
     }
 }
 
@@ -180,11 +179,27 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
 
 @end
 
+@interface LocalyticsPlugin ()
+
+@property (strong, nonatomic) UNUserNotificationCenter* center;
+@property (strong, nonatomic) NSDictionary *pendingNotification;
+
+@end
+
 @implementation LocalyticsPlugin
 
 #pragma mark Private
 
 static NSDictionary* launchOptions;
+/**
+ * Registers obervers after plugin was initialized.
+ */
+- (void) pluginInitialize
+{
+    _center    = [UNUserNotificationCenter currentNotificationCenter];
+    _center.delegate = self;
+}
+
 
 + (void)load {
     // Listen for UIApplicationDidFinishLaunchingNotification to get a hold of launchOptions
@@ -247,6 +262,11 @@ static NSDictionary* launchOptions;
     
     if (appKey) {
         [Localytics integrate:appKey];
+        if(_pendingNotification){
+            [Localytics didReceiveNotificationResponseWithUserInfo:_pendingNotification];
+            _pendingNotification = nil;
+        }
+        
         launchOptions = nil; // Clear launchOptions on integrate
     }
 }
@@ -545,18 +565,24 @@ static NSDictionary* launchOptions;
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
 {
     NSLog( @"Handle push from foreground" );
+    completionHandler(UNNotificationPresentationOptionAlert);
     // custom code to handle push while app is in the foreground
-    NSLog(@"%@", notification.request.content.userInfo);
 }
 
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-didReceiveNotificationResponse:(UNNotificationResponse *)response
-         withCompletionHandler:(void (^)())completionHandler
-{
-    if (![@"less" isEqualToString:response.actionIdentifier]) {
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler{
+    
+    if(![Localytics appKey]){
+        _pendingNotification = response.notification.request.content.userInfo;
+    }else{
+        // do work in the UI thread here
         [Localytics didReceiveNotificationResponseWithUserInfo:response.notification.request.content.userInfo];
-        completionHandler();
     }
+    
+//    if (![@"less" isEqualToString:response.actionIdentifier]) {
+//        [Localytics didReceiveNotificationResponseWithUserInfo:response.notification.request.content.userInfo];
+//        completionHandler();
+//    }
+    
     if ([@"subscribe" isEqualToString:response.actionIdentifier]) {
         NSString *ministryId = response.notification.request.content.userInfo[@"ministryId"];
         NSString *ministryName = response.notification.request.content.userInfo[@"ministryName"];
@@ -617,14 +643,11 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
         NSLog( @"Handle push from background or closed" );
         // if you set a member variable in didReceiveRemoteNotification, you  will know if this is from closed or background
         NSLog(@"%@", response.notification.request.content.userInfo);
-        if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
-            [[Branch getInstance] handlePushNotification:response.notification.request.content.userInfo];
-            [[Branch getInstance] handlePushNotification:response.notification.request.content.userInfo];
-        }
+        [[Branch getInstance] handlePushNotification:response.notification.request.content.userInfo];
     }
     
+    completionHandler();
 }
-
 
 - (void)setPushDisabled:(CDVInvokedUrlCommand *)command {
     // No-Op
