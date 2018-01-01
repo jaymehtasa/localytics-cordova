@@ -94,7 +94,15 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     NSLog(@"FIRED NOTIFICATIONS");
     NSString *ministryId = userInfo[@"ministryId"];
     WKWebView *webView = (WKWebView *)self.viewController.webView;
-    [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:nil];
+    [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:^(id result, NSError *error) {
+        if (error == nil) {
+            if (result != nil) {
+                resultString = [NSString stringWithFormat:@"%@", result];
+            }
+        } else {
+            NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
+        }
+    }];
     completionHandler(UIBackgroundFetchResultNoData);
     
     if (localyticsDidReceiveRemoteNotificationSwizzled) {
