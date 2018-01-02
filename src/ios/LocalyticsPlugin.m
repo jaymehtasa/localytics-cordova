@@ -97,7 +97,7 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:^(id result, NSError *error) {
         if (error == nil) {
             if (result != nil) {
-                resultString = [NSString stringWithFormat:@"%@", result];
+            NSLog(@"%@", result);
             }
         } else {
             NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
@@ -585,10 +585,10 @@ static NSDictionary* launchOptions;
         [Localytics didReceiveNotificationResponseWithUserInfo:response.notification.request.content.userInfo];
     }
     
-//    if (![@"less" isEqualToString:response.actionIdentifier]) {
-//        [Localytics didReceiveNotificationResponseWithUserInfo:response.notification.request.content.userInfo];
-//        completionHandler();
-//    }
+    //    if (![@"less" isEqualToString:response.actionIdentifier]) {
+    //        [Localytics didReceiveNotificationResponseWithUserInfo:response.notification.request.content.userInfo];
+    //        completionHandler();
+    //    }
     
     if ([@"subscribe" isEqualToString:response.actionIdentifier]) {
         NSString *ministryId = response.notification.request.content.userInfo[@"ministryId"];
@@ -599,7 +599,11 @@ static NSDictionary* launchOptions;
         }
         [notificationData setValue:ministryName forKey:@"ministryName"];
         [notificationData setValue:@"subscribe" forKey:@"type"];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        });
     } else if ([@"listen" isEqualToString:response.actionIdentifier]) {
         NSString *ministryId = response.notification.request.content.userInfo[@"ministryId"];
         NSString *feedId = response.notification.request.content.userInfo[@"feedId"];
@@ -613,7 +617,11 @@ static NSDictionary* launchOptions;
         }
         [notificationData setValue:ministryName forKey:@"ministryName"];
         [notificationData setValue:@"listen" forKey:@"type"];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        });
     }else if ([@"more" isEqualToString:response.actionIdentifier]){
         NSDictionary *localyticsData = response.notification.request.content.userInfo[@"ll"];
         NSString *campingId = localyticsData[@"ca"];
@@ -622,7 +630,11 @@ static NSDictionary* launchOptions;
         NSString *title = alertData[@"title"];
         NSString *body = alertData[@"body"];
         NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:campingId,@"campingId",title,@"title",body,@"body",@"more",@"type", nil];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        });
     }else if ([@"less" isEqualToString:response.actionIdentifier]){
         NSDictionary *localyticsData = response.notification.request.content.userInfo[@"ll"];
         NSDictionary *aps = response.notification.request.content.userInfo[@"aps"];
@@ -631,21 +643,33 @@ static NSDictionary* launchOptions;
         NSString *body = alertData[@"body"];
         NSString *campingId = localyticsData[@"ca"];
         NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:campingId,@"campingId",title,@"title",body,@"body",@"less",@"type", nil];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"callSubscribe" object:nil userInfo:notificationData];
+        });
     }else if ([@"listening" isEqualToString:response.actionIdentifier]){
         NSString *dataStr = response.notification.request.content.userInfo[@"data"];
         NSData *dataObj = [dataStr dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *data = [NSJSONSerialization JSONObjectWithData:dataObj options:0 error:nil];
         NSLog(@"%@",data);
         NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:data[@"clipId"],@"clipId",data[@"feedId"],@"feedId",@"Keep Listening",@"type", nil];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
+        });
     }else if ([@"nextPlay" isEqualToString:response.actionIdentifier]){
         NSString *dataStr = response.notification.request.content.userInfo[@"data"];
         NSData *dataObj = [dataStr dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *data = [NSJSONSerialization JSONObjectWithData:dataObj options:0 error:nil];
         NSLog(@"%@",data);
         NSDictionary *notificationData = [[NSDictionary alloc]initWithObjectsAndKeys:data[@"clipId"],@"clipId",data[@"feedId"],@"feedId",@"Play next",@"type", nil];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
+        double delayInSeconds =  [[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive? 2.0:0.0;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"localNotificationHandler" object:nil userInfo:notificationData];
+        });
     }else{
         NSLog( @"Handle push from background or closed" );
         // if you set a member variable in didReceiveRemoteNotification, you  will know if this is from closed or background
