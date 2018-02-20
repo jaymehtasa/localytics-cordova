@@ -1,6 +1,6 @@
 //
 //  LLPlacesCampaign.h
-//  Copyright (C) 2016 Char Software Inc., DBA Localytics
+//  Copyright (C) 2017 Char Software Inc., DBA Localytics
 //
 //  This code is provided under the Localytics Modified BSD License.
 //  A copy of this license has been distributed in a file called LICENSE
@@ -20,6 +20,7 @@
  * @see LLCampaignBase
  */
 @interface LLPlacesCampaign : LLCampaignBase
+// Make sure to override all properties in copyWithZone!
 
 /**
  * The push message
@@ -40,5 +41,20 @@
  * The event which triggered this campaign
  */
 @property (nonatomic, assign, readonly) LLRegionEvent event;
+
+/**
+ * The category for the local notification
+ */
+@property (nonatomic, copy, readonly, nullable) NSString *category;
+
+/**
+ * The attachment URL for the UNNotificationAttachment
+ */
+@property (nonatomic, copy, readonly, nullable) NSString *attachmentURL;
+
+/**
+ * The attachment URL type for the UNNotificationAttachment
+ */
+@property (nonatomic, copy, readonly, nullable) NSString *attachmentType;
 
 @end
