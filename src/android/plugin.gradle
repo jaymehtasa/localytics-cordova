@@ -11,5 +11,5 @@ repositories
 
 dependencies
 {
-  compile 'com.localytics.android:library:4.2+'
+  compile 'com.localytics.android:library:5.0.1'
 }

@@ -1,6 +1,6 @@
 //
 //  LLInboxCampaign.h
-//  Copyright (C) 2016 Char Software Inc., DBA Localytics
+//  Copyright (C) 2017 Char Software Inc., DBA Localytics
 //
 //  This code is provided under the Localytics Modified BSD License.
 //  A copy of this license has been distributed in a file called LICENSE
@@ -18,6 +18,7 @@
  * @see LLCampaignBase
  */
 @interface LLInboxCampaign : LLWebViewCampaign
+// Make sure to override all properties in copyWithZone!
 
 /**
  * The flag indicating whether the campaign has been read.
@@ -56,5 +57,15 @@
  * The received date of the campaign.
  */
 @property (nonatomic, assign, readonly) NSTimeInterval receivedDate;
+
+/**
+ * The deep link of the campaign.
+ */
+@property (nonatomic, copy, readonly, nullable) NSURL *deepLinkURL;
+
+/**
+ * True if this inbox campaign was created from a push campaign.
+ */
+@property (nonatomic, assign, readonly) BOOL isPushToInboxCampaign;
 
 @end

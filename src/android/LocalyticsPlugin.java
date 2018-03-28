@@ -7,6 +7,7 @@
 package com.localytics.phonegap;
 
 import android.app.Application;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -31,6 +32,7 @@ import java.util.Iterator;
 import com.localytics.android.Customer;
 import com.localytics.android.Localytics;
 import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
+import com.outreach.faithplay.MainActivity;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -50,8 +52,9 @@ public class LocalyticsPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("integrate")) {
-              String localyticsKey = (args.length() == 1 && !args.isNull(0)? args.getString(0) : null);
-            Localytics.integrate(cordova.getActivity().getApplicationContext(), localyticsKey);
+            String localyticsKey = (args.length() == 1 && !args.isNull(0)? args.getString(0) : null);
+            Localytics.integrate(cordova.getActivity().getApplicationContext());
+//            Localytics.integrate(cordova.getActivity().getApplicationContext(), localyticsKey);
             Intent receivedIntent = ((MainActivity)cordova.getActivity()).getReceivedIntent();
             if(receivedIntent != null){
                 Localytics.handlePushNotificationOpened(receivedIntent);
@@ -407,11 +410,11 @@ public class LocalyticsPlugin extends CordovaPlugin {
         } else if (action.equals("setLocation")) {
             if (args.length() == 2) {
                 Location location = new Location("");
-				location.setLatitude(args.getDouble(0));
-				location.setLongitude(args.getDouble(1));
+                location.setLatitude(args.getDouble(0));
+                location.setLongitude(args.getDouble(1));
 
-            	Localytics.setLocation(location);
-            	callbackContext.success();
+                Localytics.setLocation(location);
+                callbackContext.success();
             } else {
                 callbackContext.error("Expected two arguments.");
             }
@@ -536,8 +539,8 @@ public class LocalyticsPlugin extends CordovaPlugin {
             } catch (PackageManager.NameNotFoundException e) {
                 //No-op
             }
-
-            Localytics.registerPush(senderId);
+            Localytics.registerPush();
+//            Localytics.registerPush(senderId);
             callbackContext.success();
             return true;
         } else if (action.equals("setPushToken")) {

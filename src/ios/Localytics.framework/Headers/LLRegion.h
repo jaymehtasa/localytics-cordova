@@ -1,6 +1,6 @@
 //
 //  LLRegion.h
-//  Copyright (C) 2016 Char Software Inc., DBA Localytics
+//  Copyright (C) 2017 Char Software Inc., DBA Localytics
 //
 //  This code is provided under the Localytics Modified BSD License.
 //  A copy of this license has been distributed in a file called LICENSE

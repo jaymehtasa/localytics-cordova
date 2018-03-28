@@ -1,6 +1,6 @@
 //
 //  LLWebViewCampaign.h
-//  Copyright (C) 2016 Char Software Inc., DBA Localytics
+//  Copyright (C) 2017 Char Software Inc., DBA Localytics
 //
 //  This code is provided under the Localytics Modified BSD License.
 //  A copy of this license has been distributed in a file called LICENSE
@@ -15,7 +15,14 @@
  * A base campaign class containing information relevant to campaigns which
  * include a web component.
  *
- * @see LLInboxCampaign
+ * @see LLCampaignBase
  */
 @interface LLWebViewCampaign : LLCampaignBase
+// Make sure to override all properties in copyWithZone!
+
+/**
+ * The file path on disk of the creative associated with this campaign.
+ */
+@property (nonatomic, copy, readonly, nullable) NSString *creativeFilePath;
+
 @end
