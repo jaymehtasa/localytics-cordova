@@ -69,6 +69,7 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
 - (void)localytics_swizzled_Application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings{
     NSLog(@"%@", notificationSettings);
     [Localytics didRegisterUserNotificationSettings];
+//    [Localytics didRegisterUserNotificationSettings:notificationSettings];
 }
 
 - (void)registerForBackground {
@@ -97,7 +98,7 @@ BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
     [webView evaluateJavaScript:[NSString stringWithFormat:@"window.Localytics.notoficationReceived(\"%@\")", ministryId] completionHandler:^(id result, NSError *error) {
         if (error == nil) {
             if (result != nil) {
-            NSLog(@"%@", result);
+                NSLog(@"%@", result);
             }
         } else {
             NSLog(@"evaluateJavaScript error : %@", error.localizedDescription);
@@ -257,7 +258,7 @@ static NSDictionary* launchOptions;
     }
     
     if (appKey) {
-//        [Localytics integrate:appKey];
+//                [Localytics integrate:appKey];
         [Localytics integrate:appKey withLocalyticsOptions:@{
                                                              LOCALYTICS_WIFI_UPLOAD_INTERVAL_SECONDS: @5,
                                                              LOCALYTICS_GREAT_NETWORK_UPLOAD_INTERVAL_SECONDS: @10,
@@ -290,7 +291,7 @@ static NSDictionary* launchOptions;
                                     LOCALYTICS_BAD_NETWORK_UPLOAD_INTERVAL_SECONDS: @90
                                     }
                     launchOptions:launchOptions];
-//        [Localytics autoIntegrate:appKey launchOptions: launchOptions];
+//                [Localytics autoIntegrate:appKey launchOptions: launchOptions];
         launchOptions = nil; // Clear launchOptions on integrate
     }
 }
@@ -833,3 +834,5 @@ static NSDictionary* launchOptions;
     }];
 }
 @end
+
+
